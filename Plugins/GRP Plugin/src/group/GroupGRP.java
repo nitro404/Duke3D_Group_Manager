@@ -176,7 +176,12 @@ public class GroupGRP extends Group {
 			g = groupFiles.elementAt(i);
 			
 			if(data.length < offset + g.getFileSize()) {
-				throw new GroupReadException(FILE_TYPES[0].getName() + " file \"" + m_file.getName() + "\" is incomplete or corrupted: missing file #" + (i + 1) + " data.");
+// TODO: maybe add option to continue with prompt or silently on corrupted files? (ie. american assault)
+//				System.out.println(g.getFileName() + " is corrupted.");
+//				continue;
+				int numberOfMissingBytes = g.getFileSize() - (data.length - offset);
+				int numberOfAdditionalFiles = groupFiles.size() - i - 1;
+				throw new GroupReadException(FILE_TYPES[0].getName() + " file \"" + m_file.getName() + "\" is corrupted: missing " + numberOfMissingBytes + " of " + g.getFileSize() + " byte" + (g.getFileSize() == 1 ? "" : "s") + " for file #" + (i + 1) + " (\"" + g.getFileName() + "\") data." + (numberOfAdditionalFiles == 0 ? "" : " There is also an additional " + numberOfAdditionalFiles + " files that are missing data."));
 			}
 			
 			g.setData(Arrays.copyOfRange(data, offset, offset + g.getFileSize()));
